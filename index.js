@@ -32,6 +32,7 @@ module.exports = class EmojiSpoof extends Plugin {
             usage: '{c} :emote:',
             executor: (args) => {
 
+                let id;
                 let emote;
                 let size = 64;
                 let emotelinks = [];
@@ -42,7 +43,10 @@ module.exports = class EmojiSpoof extends Plugin {
                 }
 
                 args.forEach(arg => {
-                    emote = this.getEmojiById(arg.match(/([0-9]+)/)[0]);
+                    id = arg.match(/:([0-9]+)>/)[0]
+                        .replace(":", "")
+                        .replace(">", "");
+                    emote = this.getEmojiById(id);
                     emotelinks.push(emote["url"] + `&size=${size}`);
                 })
 
