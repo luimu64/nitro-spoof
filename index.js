@@ -1,64 +1,58 @@
 const { Plugin } = require('powercord/entities');
-
 const { getModule } = require('powercord/webpack');
+const { inject, uninject } = require('powercord/injector');
 
 module.exports = class EmojiSpoof extends Plugin {
-    async import(filter, functionName = filter) {
-        if (typeof filter === 'string') {
-            filter = [filter];
+    async startPlugin() {
+        const emojiStore = await getModule(['getGuildEmoji']);
+        const premiumCheck = await getModule(['canUseEmojisEverywhere']);
+
+        let emojis = getAllEmojis();
+
+        premiumCheck.canUseEmojisEverywhere = () => {
+            return true;
         }
 
-        this[functionName] = (await getModule(filter))[functionName];
-    }
+        if (premiumCheck.canUseEmojisEverywhere()) {
+            console.log("Thanks for credit card info retard :)");
+        }
 
-    async doImport() {
-        this.emojiStore = await getModule(['getGuildEmoji']);
+        function getAllEmojis() {
+            return Object.values(emojiStore.getGuilds()).flatMap(g => g.emojis);
+        }
 
-        await this.import('getEmojiURL');
-        await this.import('fetchEmoji');
-        await this.import('getGuilds');
-    }
+        function findFromEmojis(emojis, id) {
+            return emojis.find(e => e.id === id);
+        }
 
-    getEmojiById(id) {
-        return Object.values(this.emojiStore.getGuilds()).flatMap(g => g.emojis).find(e => e.id === id);
-    }
+        function getEmojiLinks(emojis, args) {
+            let emojiStrings = args[1].content.split(">").slice(0, -1);
+            let id;
+            let emote;
+            let size = 64;
+            let emotelinks = [];
 
-    async startPlugin() {
-        await this.doImport();
+            emojiStrings.forEach(arg => {
+                id = arg.match(/:([0-9]+)/)[0].replace(":", "");
+                emote = findFromEmojis(emojis, id);
+                emotelinks.push(emote["url"] + `&size=${size}`);
+            })
 
-        powercord.api.commands.registerCommand({
-            command: 'e',
-            description: 'Sends emote as link',
-            usage: '{c} :emote:',
-            executor: (args) => {
+            args[1].content = emotelinks.join("\n");
+            args[1].invalidEmojis = [];
 
-                let id;
-                let emote;
-                let size = 64;
-                let emotelinks = [];
+            return args;
+        }
 
-                if (Number.isFinite(Number(args[0]))) {
-                    size = args[0];
-                    args.shift();
-                }
-
-                args.forEach(arg => {
-                    id = arg.match(/:([0-9]+)>/)[0]
-                        .replace(":", "")
-                        .replace(">", "");
-                    emote = this.getEmojiById(id);
-                    emotelinks.push(emote["url"] + `&size=${size}`);
-                })
-
-                return {
-                    send: true,
-                    result: emotelinks.join("\n")
-                };
+        const messageEvents = await getModule(["sendMessage"]);
+        inject("spoofSend", messageEvents, "sendMessage", (args) => {
+            if (args[1].content.match(/<:([A-Z]+):([0-9]+)>/i) != null) {
+                getEmojiLinks(emojis, args);
             }
         });
     }
 
     pluginWillUnload() {
-        powercord.api.commands.unregisterCommand('e');
+        uninject("spoofSend");
     }
 };
