@@ -27,7 +27,7 @@ module.exports = class EmojiSpoof extends Plugin {
             let emotelinks = [];
 
             //find all emojis from the captured message string and return iterable containing them
-            let emojiStrings = args[1].content.matchAll(/<a?:([A-Z]+):([0-9]+)>/ig);
+            let emojiStrings = args[1].content.matchAll(/<a?:(.+):([0-9]+)>/ig);
 
             for (const emoji of emojiStrings) {
                 //fetch required info about the emoji
@@ -54,7 +54,7 @@ module.exports = class EmojiSpoof extends Plugin {
         const messageEvents = await getModule(["sendMessage"]);
         inject("spoofSend", messageEvents, "sendMessage", (args) => {
             //only run if message contains emojis
-            if (args[1].content.match(/<a?:([A-Z]+):([0-9]+)>/i) != null) {
+            if (args[1].content.match(/<a?:(.+):([0-9]+)>/i) != null) {
                 getEmojiLinks(args);
             }
         });
