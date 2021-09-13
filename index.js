@@ -4,28 +4,24 @@ const { inject, uninject } = require('powercord/injector');
 
 module.exports = class EmojiSpoof extends Plugin {
     async startPlugin() {
-        const emojiStore = await getModule(['getGuildEmoji']);
-        const premiumCheck = await getModule(['canUseEmojisEverywhere']);
+        const emojiStore = await getModule(['getCustomEmojiById'])
+        const cCheck = await getModule(['canUseEmojisEverywhere']);
+        const aCheck = await getModule(['canUseAnimatedEmojis']);
 
-        let emojis = getAllEmojis();
-
-        premiumCheck.canUseEmojisEverywhere = () => {
+        cCheck.canUseEmojisEverywhere = () => {
             return true;
         }
 
-        if (premiumCheck.canUseEmojisEverywhere()) {
-            console.log("Thanks for credit card info retard :)");
+        aCheck.canUseAnimatedEmojis = () => {
+            return true;
         }
 
-        function getAllEmojis() {
-            return Object.values(emojiStore.getGuilds()).flatMap(g => g.emojis);
+        function findFromEmojis(id) {
+            return emojiStore.getCustomEmojiById(id);
         }
 
-        function findFromEmojis(emojis, id) {
-            return emojis.find(e => e.id === id);
-        }
+        function getEmojiLinks(args) {
 
-        function getEmojiLinks(emojis, args) {
             let emojiStrings = args[1].content.split(">").slice(0, -1);
             let id;
             let emote;
@@ -34,7 +30,7 @@ module.exports = class EmojiSpoof extends Plugin {
 
             emojiStrings.forEach(arg => {
                 id = arg.match(/:([0-9]+)/)[0].replace(":", "");
-                emote = findFromEmojis(emojis, id);
+                emote = findFromEmojis(id);
                 emotelinks.push(emote["url"] + `&size=${size}`);
             })
 
@@ -46,8 +42,8 @@ module.exports = class EmojiSpoof extends Plugin {
 
         const messageEvents = await getModule(["sendMessage"]);
         inject("spoofSend", messageEvents, "sendMessage", (args) => {
-            if (args[1].content.match(/<:([A-Z]+):([0-9]+)>/i) != null) {
-                getEmojiLinks(emojis, args);
+            if (args[1].content.match(/<a?:([A-Z]+):([0-9]+)>/i) != null) {
+                getEmojiLinks(args);
             }
         });
     }
