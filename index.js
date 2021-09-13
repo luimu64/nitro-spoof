@@ -5,6 +5,9 @@ const { inject, uninject } = require('powercord/injector');
 module.exports = class EmojiSpoof extends Plugin {
     async startPlugin() {
         const emojiStore = await getModule(['getCustomEmojiById'])
+
+        //override permissions to make discord show the unavailable 
+        //emojis as available in autocomplete and in emoji picker
         const cCheck = await getModule(['canUseEmojisEverywhere']);
         const aCheck = await getModule(['canUseAnimatedEmojis']);
 
@@ -16,25 +19,22 @@ module.exports = class EmojiSpoof extends Plugin {
             return true;
         }
 
-        function findFromEmojis(id) {
-            return emojiStore.getCustomEmojiById(id);
-        }
-
         function getEmojiLinks(args) {
 
-            let emojiStrings = args[1].content.split(">").slice(0, -1);
-            let id;
             let emote;
             let size = 64;
             let emotelinks = [];
 
-            emojiStrings.forEach(arg => {
-                id = arg.match(/:([0-9]+)/)[0].replace(":", "");
-                emote = findFromEmojis(id);
-                emotelinks.push(emote["url"] + `&size=${size}`);
-            })
+            let emojiStrings = args[1].content.matchAll(/<a?:([A-Z]+):([0-9]+)>/ig);
 
-            args[1].content = emotelinks.join("\n");
+            for (const emoji of emojiStrings) {
+                args[1].content = args[1].content.replace(emoji[0], "");
+                emote = emojiStore.getCustomEmojiById(emoji[2]);
+                emotelinks.push(emote["url"] + `&size=${size}`);
+            }
+
+            console.log(args[1].content);
+            args[1].content = args[1].content + emotelinks.join("\n");
             args[1].invalidEmojis = [];
 
             return args;
