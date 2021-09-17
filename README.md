@@ -2,7 +2,7 @@
 
 ## To do:
 
-- [ ] settings for changing emoji
+- [x] settings for changing emoji size
 - [ ] sending emojis as separate message if message has text
 - [ ] stickers
 - [ ] reactions (if even possible)
