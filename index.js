@@ -48,6 +48,10 @@ module.exports = class EmojiSpoof extends Plugin {
                 if (emoji["guildId"] != lastGuild.getLastSelectedGuildId() || emoji["animated"] == true) {
                     //push link to array
                     message.emojis[i] = emoji["url"] + `&size=${size}`;
+                } else {
+                    //set the original emoji string back into the array,
+                    //yeah I know very efficient design :)
+                    message.emojis[i] = '<' + emoji['allNamesString'] + emoji['id'] + '>';
                 }
             });
 
