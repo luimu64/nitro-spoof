@@ -13,20 +13,16 @@ module.exports = class EmojiSpoof extends Plugin {
         });
 
         const { getCustomEmojiById } = await getModule(['getCustomEmojiById']);
-        const lastGuild = await getModule(['getLastSelectedGuildId']);
+        const { getLastSelectedGuildId } = await getModule(['getLastSelectedGuildId']);
 
         //override functions to make discord show the unavailable
         //emojis as available in autocomplete and in emoji picker
-        const cCheck = await getModule(['canUseEmojisEverywhere'])
-        const aCheck = await getModule(['canUseAnimatedEmojis']);
+        const checkUsability = await getModule(['canUseEmojisEverywhere', 'canUseAnimatedEmojis'])
 
-        cCheck.canUseEmojisEverywhere = () => {
-            return true;
-        }
-
-        aCheck.canUseAnimatedEmojis = () => {
-            return true;
-        }
+        checkUsability.canUseEmojisEverywhere,
+            checkUsability.canUseAnimatedEmojis = () => {
+                return true;
+            }
 
         function extractEmojis(messageString) {
             let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
@@ -45,7 +41,7 @@ module.exports = class EmojiSpoof extends Plugin {
                 //fetch required info about the emoji
                 let emoji = getCustomEmojiById(emojiId);
                 //check if emoji is normally usable or animated
-                if (emoji["guildId"] != lastGuild.getLastSelectedGuildId() || emoji["animated"] == true) {
+                if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] == true) {
                     //push link to array
                     message.emojis[i] = emoji["url"] + `&size=${size}`;
                 } else {
@@ -56,7 +52,7 @@ module.exports = class EmojiSpoof extends Plugin {
             });
 
             //add links to the end of the original message
-            args[1].content = message.content + message.emojis.join("\n");
+            args[1].content = message.content + "\n" + message.emojis.join("\n");
             //set invalidEmojis to empty to prevent discord yelling to you about you not having nitro
             args[1].invalidEmojis = [];
 
@@ -69,7 +65,7 @@ module.exports = class EmojiSpoof extends Plugin {
             let size = this.settings.get("size");
 
             //only run if message contains emojis
-            if (args[1].content.match(/<a?:(.+):([0-9]+)>/i) != null) {
+            if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
                 getEmojiLinks(size, args);
             }
         });
