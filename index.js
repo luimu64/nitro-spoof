@@ -14,15 +14,20 @@ module.exports = class EmojiSpoof extends Plugin {
 
         const { getCustomEmojiById } = await getModule(['getCustomEmojiById']);
         const { getLastSelectedGuildId } = await getModule(['getLastSelectedGuildId']);
-
         //override functions to make discord show the unavailable
         //emojis as available in autocomplete and in emoji picker
-        const checkUsability = await getModule(['canUseEmojisEverywhere', 'canUseAnimatedEmojis'])
+        const checkUsability = await getModule(
+            ['canUseEmojisEverywhere',
+                'canUseAnimatedEmojis'
+            ]);
 
-        checkUsability.canUseEmojisEverywhere,
-            checkUsability.canUseAnimatedEmojis = () => {
-                return true;
-            }
+        checkUsability.canUseEmojisEverywhere = () => {
+            return true;
+        }
+
+        checkUsability.canUseAnimatedEmojis = () => {
+            return true;
+        }
 
         function extractEmojis(messageString) {
             let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
