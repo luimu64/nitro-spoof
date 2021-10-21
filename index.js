@@ -48,7 +48,7 @@ module.exports = class EmojiSpoof extends Plugin {
                 //check if emoji is normally usable or animated
                 if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] == true) {
                     //push link to array
-                    message.emojis[i] = emoji["url"] + `&size=${size}`;
+                    message.emojis[i] = emoji["url"].split("?")[0] + `?size=${size}`;
                 } else {
                     //set the original emoji string back into the array,
                     //yeah I know very efficient design :)
