@@ -17,14 +17,13 @@ module.exports = class EmojiSpoof extends Plugin {
         const { getStickerById } = await getModule(['getStickerById']);
         const { getLastSelectedGuildId } = await getModule(['getLastSelectedGuildId']);
         const messageEvents = await getModule(["sendMessage"]);
-        const stickerEvents = await getModule(["sendStickers"]);
 
-        console.log(stickerEvents)
         //override functions to make discord show the unavailable
         //emojis as available in autocomplete and in emoji picker
         const c1 = await getModule(['canUseEmojisEverywhere']);
         const c2 = await getModule(['canUseAnimatedEmojis']);
         const c3 = await getModule(['isSendableSticker']);
+        const c4 = await getModule(['canUseStickersEverywhere']);
 
         c1.canUseEmojisEverywhere = () => {
             return true;
@@ -38,6 +37,9 @@ module.exports = class EmojiSpoof extends Plugin {
             return true;
         }
 
+        c4.canUseStickersEverywhere = () => {
+            return true;
+        }
 
         function extractEmojis(messageString) {
             let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
@@ -75,11 +77,8 @@ module.exports = class EmojiSpoof extends Plugin {
             return args;
         }
 
-
         inject("spoofEmojiSend", messageEvents, "sendMessage", (args) => {
             let size = this.settings.get("size");
-
-            console.log(args[1])
 
             //only run if message contains emojis
             if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
@@ -88,9 +87,7 @@ module.exports = class EmojiSpoof extends Plugin {
         });
 
         inject("spoofStickerSend", messageEvents, "sendStickers", (args) => {
-            const { format_type, id } = getStickerById(args[1][0])
-            console.log(getStickerById(args[1][0]))
-            console.log(getStickerAssetUrl(format_type, id))
+            console.log(getStickerAssetUrl(getStickerById(args[1][0])))
         });
     }
 
