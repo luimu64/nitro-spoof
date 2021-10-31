@@ -1,18 +1,30 @@
-import * as webpackModules from '@goosemod/webpack';
+import { findByProps } from '@goosemod/webpack';
 import * as patcher from '@goosemod/patcher';
 import { createItem, removeItem } from '@goosemod/settings';
+import getEmojiLinks from './utils';
 
-const settings = { emojisize: '64' };
+let settings = { emojisize: '64' };
 
-const usabilityCheck = webpackModules.findByProps('canUseEmojisEverywhere');
+const usabilityCheck = findByProps('canUseEmojisEverywhere', 'canUseAnimatedEmojis');
+const messageEvents = findByProps('sendMessage');
 
-const Unpatch = {};
+const Unpatch = { animatedCheck: null, emojiCheck: null, sendMessage: null };
 
 export default {
     goosemodHandlers: {
         onImport: async () => {
-            Unpatch.usabilityCheck = patcher.patch(usabilityCheck, "canUseEmojisEverywhere", () => {
+            Unpatch.emojiCheck = patcher.patch(usabilityCheck, "canUseEmojisEverywhere", () => {
                 return true;
+            });
+
+            Unpatch.animatedCheck = patcher.patch(usabilityCheck, "canUseAnimatedEmojis", () => {
+                return true;
+            });
+
+            Unpatch.sendMessage = patcher.patch(messageEvents, "sendMessage", (args) => {
+                if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
+                    getEmojiLinks(settings.emojisize, args);
+                }
             });
 
             createItem('Nitro Spoof', ['',
