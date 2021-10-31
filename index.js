@@ -95,6 +95,9 @@ module.exports = class EmojiSpoof extends Plugin {
 
         inject("spoofStickerSend", messageEvents, "sendStickers", (args) => {
             console.log(getStickerAssetUrl(getStickerById(args[1][0])))
+            messageEvents.sendMessage(args[0], {
+                content: getStickerAssetUrl(getStickerById(args[1][0]))
+            })
         });
     }
 
