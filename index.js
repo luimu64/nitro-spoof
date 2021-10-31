@@ -39,8 +39,12 @@ module.exports = class EmojiSpoof extends Plugin {
             return { content: messageString.trim(), emojis: emojiIds };
         }
 
+        //returns true if the home button is selected
         function isInDms() {
-            return document.querySelector('[data-list-item-id="guildsnav___home"]').classList.contains("selected-bZ3Lue")
+            return document
+                .querySelector('[data-list-item-id="guildsnav___home"]')
+                .classList
+                .contains("selected-bZ3Lue")
         }
 
         function getEmojiLinks(size, args) {
