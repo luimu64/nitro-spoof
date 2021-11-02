@@ -1,4 +1,4 @@
-# Super illegal powercord plugin for sending all emojis without nitro
+# powercord plugin for sending all emojis without nitro
 
 ## Weaknesses:
 - if emoji is put in message with text the link will be visible
