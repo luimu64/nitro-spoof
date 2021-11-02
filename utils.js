@@ -2,6 +2,12 @@ import { findByProps } from '@goosemod/webpack';
 
 const { getCustomEmojiById } = findByProps('getCustomEmojiById');
 const { getLastSelectedGuildId } = findByProps('getLastSelectedGuildId');
+const { getStickerAssetUrl } = findByProps('getStickerAssetUrl');
+const { getStickerById } = findByProps('getStickerById');
+
+function getSticker(args) {
+    return getStickerAssetUrl(getStickerById(args[1][0]))
+}
 
 function extractEmojis(messageString) {
     let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
@@ -47,4 +53,4 @@ function getEmojiLinks(size, args) {
     return args;
 }
 
-export default getEmojiLinks;
+export { getEmojiLinks, getSticker };

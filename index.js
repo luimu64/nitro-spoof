@@ -1,23 +1,42 @@
 import { findByProps } from '@goosemod/webpack';
 import * as patcher from '@goosemod/patcher';
 import { createItem, removeItem } from '@goosemod/settings';
-import getEmojiLinks from './utils';
+import { getEmojiLinks, getSticker } from './utils';
 
 let settings = { emojisize: '64' };
 
-const usabilityCheck = findByProps('canUseEmojisEverywhere', 'canUseAnimatedEmojis');
+const emojiCheck = findByProps('canUseEmojisEverywhere', 'canUseAnimatedEmojis');
+const stickerCheck = findByProps('isSendableSticker', 'canUseStickersEverywhere');
 const messageEvents = findByProps('sendMessage');
+const stickerEvents = findByProps('sendStickers');
 
-const Unpatch = { animatedCheck: null, emojiCheck: null, sendMessage: null };
+const Unpatch = {
+    emojiCheck1: null,
+    emojiCheck2: null,
+    stickerCheck1: null,
+    stickerCheck2: null,
+    sendMessage: null,
+    sendSticker: null
+};
 
 export default {
     goosemodHandlers: {
         onImport: async () => {
-            Unpatch.emojiCheck = patcher.patch(usabilityCheck, "canUseEmojisEverywhere", () => {
+
+
+            Unpatch.emojiCheck1 = patcher.patch(emojiCheck, "canUseEmojisEverywhere", () => {
                 return true;
             });
 
-            Unpatch.animatedCheck = patcher.patch(usabilityCheck, "canUseAnimatedEmojis", () => {
+            Unpatch.emojiCheck2 = patcher.patch(emojiCheck, "canUseAnimatedEmojis", () => {
+                return true;
+            });
+
+            Unpatch.stickerCheck1 = patcher.patch(stickerCheck, "isSendableSticker", () => {
+                return true;
+            });
+
+            Unpatch.stickerCheck2 = patcher.patch(stickerCheck, "canUseStickersEverywhere", () => {
                 return true;
             });
 
@@ -25,6 +44,10 @@ export default {
                 if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
                     getEmojiLinks(settings.emojisize, args);
                 }
+            });
+
+            Unpatch.sendSticker = patcher.patch(stickerEvents, "sendStickers", (args) => {
+                console.log(getSticker(args))
             });
 
             createItem('Nitro Spoof', ['',
