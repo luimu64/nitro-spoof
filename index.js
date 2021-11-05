@@ -23,7 +23,6 @@ module.exports = class EmojiSpoof extends Plugin {
         const c1 = await getModule(['canUseEmojisEverywhere']);
         const c2 = await getModule(['canUseAnimatedEmojis']);
         const c3 = await getModule(['isSendableSticker']);
-        const c4 = await getModule(['canUseStickersEverywhere']);
 
         c1.canUseEmojisEverywhere = () => {
             return true;
@@ -34,10 +33,6 @@ module.exports = class EmojiSpoof extends Plugin {
         }
 
         c3.isSendableSticker = () => {
-            return true;
-        }
-
-        c4.canUseStickersEverywhere = () => {
             return true;
         }
 
@@ -85,7 +80,16 @@ module.exports = class EmojiSpoof extends Plugin {
             return args;
         }
 
+        function handleStickerWithMessage(args) {
+            console.log(args);
+            args[1].content += getStickerAssetUrl(getStickerById(args[3].stickerIds[0]));
+            args[3].stickerIds = [];
+            return args;
+        }
+
         inject("spoofEmojiSend", messageEvents, "sendMessage", (args) => {
+            if (args[3].stickerIds != []) handleStickerWithMessage(args);
+
             let size = this.settings.get("size");
             //only run if message contains emojis
             if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
