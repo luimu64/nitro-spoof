@@ -23,6 +23,8 @@ module.exports = class EmojiSpoof extends Plugin {
         const c1 = await getModule(['canUseEmojisEverywhere']);
         const c2 = await getModule(['canUseAnimatedEmojis']);
         const c3 = await getModule(['isSendableSticker']);
+        const c4 = await getModule(['canUseStickersEverywhere']);
+        const { StickerSendability } = await getModule(['StickerSendability']);
 
         c1.canUseEmojisEverywhere = () => {
             return true;
@@ -35,6 +37,20 @@ module.exports = class EmojiSpoof extends Plugin {
         c3.isSendableSticker = () => {
             return true;
         }
+
+        c4.canUseStickersEverywhere = () => {
+            return true;
+        }
+
+        StickerSendability.SENDABLE = (
+            StickerSendability.SENDABLE_WITH_PREMIUM +
+            StickerSendability.SENDABLE_WITH_PREMIUM_GUILD +
+            StickerSendability.NONSENDABLE
+        )
+
+        StickerSendability.NONSENDABLE = 0
+        StickerSendability.SENDABLE_WITH_PREMIUM = 0
+        StickerSendability.SENDABLE_WITH_PREMIUM_GUILD = 0
 
         function extractEmojis(messageString) {
             let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
@@ -81,27 +97,25 @@ module.exports = class EmojiSpoof extends Plugin {
         }
 
         function handleStickerWithMessage(args) {
-            console.log(args);
             args[1].content += getStickerAssetUrl(getStickerById(args[3].stickerIds[0]));
             args[3].stickerIds = [];
             return args;
         }
 
-        inject("spoofEmojiSend", messageEvents, "sendMessage", (args) => {
-            if (args[3].stickerIds != []) handleStickerWithMessage(args);
-
+        inject("spoofEmojiSend", messageEvents, "sendMessage", async (args) => {
             let size = this.settings.get("size");
             //only run if message contains emojis
             if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
-                getEmojiLinks(size, args);
-            }
+                await getEmojiLinks(size, args);
+            } else if (args[3].stickerIds != []) await handleStickerWithMessage(args);
         });
 
-        inject("spoofStickerSend", messageEvents, "sendStickers", (args) => {
-            console.log(getStickerAssetUrl(getStickerById(args[1][0])))
-            messageEvents.sendMessage(args[0], {
-                content: getStickerAssetUrl(getStickerById(args[1][0]))
-            })
+        inject("spoofStickerSend", messageEvents, "sendStickers", async args => {
+            console.log(args)
+            await messageEvents.sendMessage(
+                args[0],
+                { content: getStickerAssetUrl(getStickerById(args[1][0])) }
+            )
         });
     }
 
