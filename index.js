@@ -1,12 +1,12 @@
 import { findByProps } from '@goosemod/webpack';
 import * as patcher from '@goosemod/patcher';
 import { createItem, removeItem } from '@goosemod/settings';
-import { getEmojiLinks, getSticker } from './utils';
+import { getEmojiLinks, getSticker } from './utils/emojiUtils';
 
 let settings = { emojisize: '64' };
 
 const emojiCheck = findByProps('canUseEmojisEverywhere', 'canUseAnimatedEmojis');
-const stickerCheck = findByProps('isSendableSticker', 'canUseStickersEverywhere');
+const stickerCheck = findByProps('isSendableSticker');
 const messageEvents = findByProps('sendMessage');
 const stickerEvents = findByProps('sendStickers');
 
@@ -36,10 +36,6 @@ export default {
                 return true;
             });
 
-            Unpatch.stickerCheck2 = patcher.patch(stickerCheck, "canUseStickersEverywhere", () => {
-                return true;
-            });
-
             Unpatch.sendMessage = patcher.patch(messageEvents, "sendMessage", (args) => {
                 if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
                     getEmojiLinks(settings.emojisize, args);
@@ -47,7 +43,7 @@ export default {
             });
 
             Unpatch.sendSticker = patcher.patch(stickerEvents, "sendStickers", (args) => {
-                console.log(getSticker(args))
+                getSticker(args)
             });
 
             createItem('Nitro Spoof', ['',
