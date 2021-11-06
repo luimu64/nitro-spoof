@@ -17,13 +17,13 @@ module.exports = class EmojiSpoof extends Plugin {
         const { getStickerById } = await getModule(['getStickerById']);
         const { getLastSelectedGuildId } = await getModule(['getLastSelectedGuildId']);
         const messageEvents = await getModule(["sendMessage"]);
+        const stickerNode = await getModule(["stickerNode"]);
 
         //override functions to make discord show the unavailable
         //emojis as available in autocomplete and in emoji picker
         const c1 = await getModule(['canUseEmojisEverywhere']);
         const c2 = await getModule(['canUseAnimatedEmojis']);
         const c3 = await getModule(['isSendableSticker']);
-        const c4 = await getModule(['canUseStickersEverywhere']);
 
         c1.canUseEmojisEverywhere = () => {
             return true;
@@ -34,10 +34,6 @@ module.exports = class EmojiSpoof extends Plugin {
         }
 
         c3.isSendableSticker = () => {
-            return true;
-        }
-
-        c4.canUseStickersEverywhere = () => {
             return true;
         }
 
