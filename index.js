@@ -17,6 +17,7 @@ module.exports = class EmojiSpoof extends Plugin {
         const { getStickerById } = await getModule(['getStickerById']);
         const { getLastSelectedGuildId } = await getModule(['getLastSelectedGuildId']);
         const messageEvents = await getModule(["sendMessage"]);
+        const stickerNode = await getModule(["stickerNode"]);
 
         //override functions to make discord show the unavailable
         //emojis as available in autocomplete and in emoji picker
