@@ -1,6 +1,12 @@
 # goosemod plugin for sending all emojis without nitro
 
-## Weaknesses:
+## How to use:
+go to plugins -> cloud icon in top right corner -> and paste this into the url bar: <br>
+`https://raw.githubusercontent.com/luimu64/nitro-spoof/gm-master/dist/modules.json`
+
+because I didn't bother setting the repo up properly there is no pgp
+
+## Cons:
 - if emoji is put in message with text the link will be visible
 - size scales resolution instead of the actual size resulting in pixelated images if size is set too small
 
