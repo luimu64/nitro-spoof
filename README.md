@@ -1,10 +1,14 @@
 # goosemod plugin for sending all emojis without nitro
 
 ## How to use:
-go to plugins -> cloud icon in top right corner -> and paste this into the url bar: <br>
+1. go to plugins 
+2. cloud icon in top right corner 
+3. paste this into the url bar: <br>
 `https://raw.githubusercontent.com/luimu64/nitro-spoof/gm-master/dist/modules.json`
 
-because I didn't bother setting the repo up properly there is no pgp
+4. search and add the plugin like any other from the store
+
+I didn't bother setting the up the repo properly so there is no pgp
 
 ## Cons:
 - if emoji is put in message with text the link will be visible
