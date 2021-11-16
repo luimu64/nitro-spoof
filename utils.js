@@ -31,6 +31,8 @@ function getEmojiLinks(size, args) {
         if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] || isInDms()) {
             //push link to array
             message.emojis[i] = emoji["url"].split("?")[0] + `?size=${size}`;
+            //add links to the end of the original message
+            args[1].content = message.content + "\n" + message.emojis.join("\n");
         } else {
             //set the original emoji string back into the array,
             //yeah I know very efficient design :)
@@ -38,8 +40,6 @@ function getEmojiLinks(size, args) {
         }
     });
 
-    //add links to the end of the original message
-    args[1].content = message.content + "\n" + message.emojis.join("\n");
     //set invalidEmojis to empty to prevent discord yelling to you about you not having nitro
     args[1].invalidEmojis = [];
 
