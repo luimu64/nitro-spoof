@@ -3,14 +3,19 @@ import { findByProps } from '@goosemod/webpack';
 const { getCustomEmojiById } = findByProps('getCustomEmojiById');
 const { getLastSelectedGuildId } = findByProps('getLastSelectedGuildId');
 
-function extractEmojis(messageString) {
+function extractNonUsableEmojis(messageString, size) {
     let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
-    let emojiIds = [];
-    for (let emoji of emojiStrings) {
-        messageString = messageString.replace(emoji[0], '');
-        emojiIds.push(emoji[2]);
+    let emojiUrls = [];
+    for (let emojiString of emojiStrings) {
+        //fetch required info about the emoji
+        let emoji = getCustomEmojiById(emojiString[2]);
+        //check emoji usability
+        if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] || isInDms()) {
+            messageString = messageString.replace(emojiString[0], '');
+            emojiUrls.push(emoji["url"].split("?")[0] + `?size=${size}`);
+        }
     }
-    return { content: messageString.trim(), emojis: emojiIds };
+    return { content: messageString.trim(), emojis: emojiUrls };
 }
 
 //returns true if the home button is selected
@@ -22,24 +27,14 @@ function isInDms() {
 }
 
 function getEmojiLinks(size, args) {
-    //find all emojis from the captured message string and return iterable containing them
-    let message = extractEmojis(args[1].content);
-    message.emojis.forEach((emojiId, i) => {
-        //fetch required info about the emoji
-        let emoji = getCustomEmojiById(emojiId);
-        //check if emoji is normally usable or animated
-        if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] || isInDms()) {
-            //push link to array
-            message.emojis[i] = emoji["url"].split("?")[0] + `?size=${size}`;
-        } else {
-            //set the original emoji string back into the array,
-            //yeah I know very efficient design :)
-            message.emojis[i] = '<' + emoji['allNamesString'] + emoji['id'] + '>';
-        }
-    });
+    //find all emojis from the captured message string and return object with emojiURLS and content
+    const processedData = extractNonUsableEmojis(args[1].content, size);
 
-    //add links to the end of the original message
-    args[1].content = message.content + "\n" + message.emojis.join("\n");
+    args[1].content = processedData.content;
+    if (processedData.emojis.length > 0) {
+        args[1].content += "\n" + processedData.emojis.join("\n");
+    }
+
     //set invalidEmojis to empty to prevent discord yelling to you about you not having nitro
     args[1].invalidEmojis = [];
 
