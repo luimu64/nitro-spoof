@@ -3,8 +3,14 @@ import { findByProps } from '@goosemod/webpack';
 const { getCustomEmojiById } = findByProps('getCustomEmojiById');
 const { getLastSelectedGuildId } = findByProps('getLastSelectedGuildId');
 
+function handleEscapedEmojis(content) {
+    const messageAsArray = content.split("").filter(char => char != "\\");
+
+    return messageAsArray.join("");
+}
+
 function extractNonUsableEmojis(messageString, size) {
-    let emojiStrings = messageString.matchAll(/^(?!\\)<a?:(\w+):(\d+)>/ig);
+    let emojiStrings = messageString.matchAll(/(?<!\\)<a?:(\w+):(\d+)>/ig);
 
     let emojiUrls = [];
     for (let emojiString of emojiStrings) {
@@ -29,7 +35,8 @@ function isInDms() {
 
 function getEmojiLinks(size, args) {
     //find all emojis from the captured message string and return object with emojiURLS and content
-    const processedData = extractNonUsableEmojis(args[1].content, size);
+    let processedData = extractNonUsableEmojis(args[1].content, size);
+    processedData.content = handleEscapedEmojis(processedData.content);
 
     args[1].content = processedData.content;
     if (processedData.emojis.length > 0) {
