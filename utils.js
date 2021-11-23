@@ -4,7 +4,8 @@ const { getCustomEmojiById } = findByProps('getCustomEmojiById');
 const { getLastSelectedGuildId } = findByProps('getLastSelectedGuildId');
 
 function extractNonUsableEmojis(messageString, size) {
-    let emojiStrings = messageString.matchAll(/<a?:(\w+):(\d+)>/ig);
+    let emojiStrings = messageString.matchAll(/^(?!\\)<a?:(\w+):(\d+)>/ig);
+
     let emojiUrls = [];
     for (let emojiString of emojiStrings) {
         //fetch required info about the emoji
