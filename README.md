@@ -10,6 +10,11 @@
 
 I didn't bother setting the up the repo properly so there is no pgp
 
+## Escaping emojis
+
+If you want to prevent the plugin from replacing specific emoji (to use NQN for example),
+you can prepend the emoji with '\\' character. If you wish to also prevent NQN picking up the emoji use two of them. 
+
 ## Cons:
 - if emoji is put in message with text the link will be visible
 - size scales resolution instead of the actual size resulting in pixelated images if size is set too small
