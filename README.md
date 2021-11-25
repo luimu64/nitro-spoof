@@ -25,3 +25,13 @@ you can prepend the emoji with '\\' character. If you wish to also prevent NQN p
 - [ ] sending emojis as separate message if message has text
 - [ ] stickers (if even possible)
 - [ ] reactions (if even possible)
+
+## Variants
+### Goosemod 
+The main variant which I maintain currently since I use gm actively. Can be found in gm-master branch.
+### Powercord
+First variant of the plugin which I am not maintaining anymore.
+### Cumcord
+Cumcord variant ported by Yellowsink in [here](https://github.com/yellowsink/cc-plugins). 
+This is the recommended way for using for all platforms except Goosemod. If there is an issue with this variant
+don't make issue here since I have no say in what Yellowsink does, instead make issue in the repo linked above.
