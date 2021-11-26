@@ -4,7 +4,7 @@ const { getCustomEmojiById } = findByProps('getCustomEmojiById');
 const { getLastSelectedGuildId } = findByProps('getLastSelectedGuildId');
 
 function handleEscapedEmojis(content) {
-    return content.replaceAll(/\\?(<a?:(\w+):(\d+)>)/ig, '$1');
+    return content.replaceAll(/\\(<a?:(\w+):(\d+)>)/ig, '$1');
 }
 
 function extractNonUsableEmojis(messageString, size) {
