@@ -1,5 +1,12 @@
 # goosemod plugin for sending all emojis without nitro
 
+## Bug probably caused by goosemod
+if the plugin stops working with console error saying that emojisize is null
+
+1. uninstall the plugin
+2. refresh the plugin store
+3. reinstall the plugin
+
 ## How to use:
 1. go to plugins 
 2. cloud icon in top right corner 
