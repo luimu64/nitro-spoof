@@ -17,7 +17,7 @@ function extractNonUsableEmojis(messageString, size) {
         //check emoji usability
         if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] || isInDms()) {
             messageString = messageString.replace(emojiString[0], '');
-            emojiUrls.push(emoji["url"].split("?")[0] + `?size=${size}`);
+            emojiUrls.push(emoji["url"].split("?")[0] + `?size=${size}&quality=lossless`);
         }
     }
     return { content: messageString.trim(), emojis: emojiUrls };
