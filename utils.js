@@ -25,10 +25,11 @@ function extractNonUsableEmojis(messageString, size) {
 
 //returns true if the home button is selected
 function isInDms() {
-    return document
+    let dmClass = Array.from(document
         .querySelector('[data-list-item-id="guildsnav___home"]')
-        .classList
-        .contains("selected-bZ3Lue")
+        .classList)
+        .find(v => v.indexOf("selected-") == 0)
+    return dmClass ? true : false;
 }
 
 function getEmojiLinks(size, args) {
