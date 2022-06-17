@@ -18,7 +18,7 @@ function extractNonUsableEmojis(messageString, size, extension) {
         if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] || isInDms()) {
             messageString = messageString.replace(emojiString[0], '');
             const initialUrl = emoji["url"].split("?")[0];
-            emojiUrls.push((initialUrl.endsWidth(".gif") ? initialUrl : initialUrl.replace(/\.(.*)$/,"."+extension||"webp")) + `?size=${size}&quality=lossless`);
+            emojiUrls.push((initialUrl.endsWith(".gif") ? initialUrl : initialUrl.replace(/\.(\w*)$/,"."+extension||"webp")) + `?size=${size}&quality=lossless`);
         }
     }
     return { content: messageString.trim(), emojis: emojiUrls };
