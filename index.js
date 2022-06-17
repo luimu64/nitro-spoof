@@ -38,7 +38,7 @@ export default {
                 },
                 {
                     type: 'text-input',
-                    text: 'Emoji Extension',
+                    text: 'Emoji Extension (webp, png)',
                     initialValue: () => settings.emoji_extension,
                     oninput: (value) => {
                         settings.emoji_extension = value;
