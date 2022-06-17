@@ -7,7 +7,7 @@ function handleEscapedEmojis(content) {
     return content.replaceAll(/\\(<a?:(\w+):(\d+)>)/ig, '$1');
 }
 
-function extractNonUsableEmojis(messageString, size) {
+function extractNonUsableEmojis(messageString, size, extension) {
     let emojiStrings = messageString.matchAll(/(?<!\\)<a?:(\w+):(\d+)>/ig);
 
     let emojiUrls = [];
@@ -17,7 +17,8 @@ function extractNonUsableEmojis(messageString, size) {
         //check emoji usability
         if (emoji["guildId"] != getLastSelectedGuildId() || emoji["animated"] || isInDms()) {
             messageString = messageString.replace(emojiString[0], '');
-            emojiUrls.push(emoji["url"].split("?")[0] + `?size=${size}&quality=lossless`);
+            const initialUrl = emoji["url"].split("?")[0];
+            emojiUrls.push((initialUrl.endsWidth(".gif") ? initialUrl : initialUrl.replace(/\.(.*)$/,"."+extension||"webp")) + `?size=${size}&quality=lossless`);
         }
     }
     return { content: messageString.trim(), emojis: emojiUrls };
@@ -31,9 +32,9 @@ function isInDms() {
         .some(v => v.indexOf("selected-") == 0)
 }
 
-function getEmojiLinks(size, args) {
+function getEmojiLinks(size, args, extension) {
     //find all emojis from the captured message string and return object with emojiURLS and content
-    let processedData = extractNonUsableEmojis(args[1].content, size);
+    let processedData = extractNonUsableEmojis(args[1].content, size, extension);
     processedData.content = handleEscapedEmojis(processedData.content);
 
     args[1].content = processedData.content;

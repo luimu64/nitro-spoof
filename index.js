@@ -3,7 +3,7 @@ import * as patcher from '@goosemod/patcher';
 import { createItem, removeItem } from '@goosemod/settings';
 import getEmojiLinks from './utils';
 
-let settings = { emojisize: '64' };
+let settings = { emojisize: '64', emoji_extension: "webp" };
 
 const usabilityCheck = findByProps('canUseEmojisEverywhere', 'canUseAnimatedEmojis');
 const messageEvents = findByProps('sendMessage');
@@ -23,7 +23,7 @@ export default {
 
             Unpatch.sendMessage = patcher.patch(messageEvents, "sendMessage", (args) => {
                 if (args[1].content.match(/<a?:(\w+):(\d+)>/i) != null) {
-                    getEmojiLinks(settings.emojisize, args);
+                    getEmojiLinks(settings.emojisize, args, settings.emoji_extension);
                 }
             });
 
@@ -34,6 +34,14 @@ export default {
                     initialValue: () => settings.emojisize,
                     oninput: (value) => {
                         settings.emojisize = value;
+                    },
+                },
+                {
+                    type: 'text-input',
+                    text: 'Emoji Extension',
+                    initialValue: () => settings.emoji_extension,
+                    oninput: (value) => {
+                        settings.emoji_extension = value;
                     },
                 },
             ]);
