@@ -1,6 +1,6 @@
 {
     "main": "index.js",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Nitro Spoof",
     "description": "Plugin for sending emojis as links without nitro.",
     "tags": [
