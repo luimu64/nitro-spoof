@@ -7,16 +7,6 @@ if the plugin stops working with console error saying that emojisize is null
 2. refresh the plugin store
 3. reinstall the plugin
 
-## How to use:
-1. go to plugins 
-2. cloud icon in top right corner 
-3. paste this into the url bar: <br>
-`https://raw.githubusercontent.com/luimu64/nitro-spoof/gm-master/dist/modules.json`
-
-4. search and add the plugin like any other from the store
-
-I didn't bother setting the up the repo properly so there is no pgp
-
 ## Escaping emojis
 
 If you want to prevent the plugin from replacing specific emoji (to use NQN for example),
